@@ -1,5 +1,6 @@
 const _ = require('underscore');
 const keypress = require('keypress');
+const messageQueue = require('./messageQueue');
 
 ///////////////////////////////////////////////////////////////////////////////
 // Utility Function ///////////////////////////////////////////////////////////
@@ -31,14 +32,14 @@ module.exports.initialize = () => {
   // setup an event handler on standard input
   process.stdin.on('keypress', (chunk, key) => {
     // ctrl+c should quit the program
-    console.log(chunk);
+    //console.log('test' + chunk);
     if (key && key.ctrl && key.name === 'c') {
       process.exit();
     }
 
     // check to see if the keypress itself is a valid message
     if (isValidMessage(key.name)) {
-      console.log(`Message received: ${key.name}`);
+      messageQueue.enqueue(key.name);
       return; // don't do any more processing on this key
     }
     

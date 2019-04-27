@@ -1,13 +1,46 @@
 //import { swimCommandFetcher } from './httpHandler.js';
-swimCommandFetcher = (direction) => {
+var serverUrl = 'http://127.0.0.1:3000/';
+
+swimCommandFetcher = () => {
   // This needs to be refactored to a separate file and imported later
   $.ajax({
-    type: 'POST',
-    url: 'http://127.0.0.1:3000',
-    data: direction,
+    type: 'GET',
+    url: serverUrl,
     success: (response) => {
       console.log('The server is sending back: ' + response);
+      SwimTeam.move(response);
+    },
+    error: () => console.log('Failed to get data')
+  });
+};
+
+const ajaxFileUpload = (file) => {
+  var formData = new FormData();
+  formData.append('file', file);
+  $.ajax({
+    type: 'POST',
+    data: formData,
+    url: serverUrl + 'image',
+    cache: false,
+    contentType: false,
+    processData: false,
+    success: () => {
+      // reload the page
+      window.location = window.location.href;
     }
+  });
+};
+
+getBackgroundImage = () => {
+  // This needs to be refactored to a separate file and imported later
+  $.ajax({
+    type: 'GET',
+    url: serverUrl + 'image',
+    success: (response) => {
+      // Update background image
+      console.log(response);
+    },
+    error: () => console.log('Failed to get data')
   });
 };
 
@@ -15,8 +48,8 @@ $('body').on('keydown', (event) => {
   var arrowPress = event.key.match(/Arrow(Up|Down|Left|Right)/);
   if (arrowPress) {
     var direction = arrowPress[1];
-    swimCommandFetcher(direction);
-    SwimTeam.move(direction.toLowerCase());
+    swimCommandFetcher();
+   // SwimTeam.move(direction.toLowerCase());
   }
 });
 
@@ -35,7 +68,7 @@ $('form').on('submit', function(e) {
     return;
   }
 
-  ajaxFileUplaod(file);
+  ajaxFileUpload(file);
 });
 
 console.log('Client is running in the browser!');
